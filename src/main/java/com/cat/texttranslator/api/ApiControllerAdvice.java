@@ -3,12 +3,14 @@ package com.cat.texttranslator.api;
 import com.cat.texttranslator.api.model.ApiResponse;
 import com.cat.texttranslator.api.model.Error;
 import com.cat.texttranslator.constant.AppConstants;
+import com.cat.texttranslator.constant.ErrorCodes;
 import com.cat.texttranslator.exception.LabelNotFoundException;
 import com.cat.texttranslator.exception.MalformedExcelFileException;
 import com.cat.texttranslator.exception.MalformedJsonPayloadException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -58,6 +60,16 @@ public class ApiControllerAdvice {
                 .error(
                         buildError(HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
                 ).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(value = MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse> missingServletReqParameterException(MissingServletRequestParameterException ex) {
+        log.error("Error: ", ex);
+        return new ResponseEntity<>(ApiResponse.builder()
+                .status(AppConstants.FAILED)
+                .error(
+                        buildError(ErrorCodes.INVALID_REQUEST.getCode(), ex.getMessage())
+                ).build(), HttpStatus.BAD_REQUEST);
     }
 
     private Error buildError(int errorCode, String message) {

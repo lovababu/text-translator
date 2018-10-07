@@ -1,7 +1,7 @@
 server:
   port: 8082
   servlet:
-    context-path: "/api"
+    context-path: "/api/translate"
 
 management:
   endpoints:
@@ -18,14 +18,25 @@ spring:
 
 languages:
   map:
-    English : "EN"
-    Danish  : "DN"
-    Dutch   : "DT"
-    Finnish : "FI"
-    French  : "FR"
-    Italian : "IT"
-    Portuguese : "PT"
-    Thai    : "TH"
-    Chinese : "ZH"
-    Japanese : "JA"
+    English   : "EN"
+    Danish    : "DN"
+    Dutch     : "DT"
+    Finnish   : "FI"
+    French    : "FR"
+    Italian   : "IT"
+    Portuguese: "PT"
+    Russian   : "RU"
+    Spanish   : "ES"
+    Thai      : "TH"
+    Turkish   : "TR"
+    Chinese-S : "ZH-Hans"
+    Chinese-T : "ZH-Hant"
+    Japanese  : "JA"
+    Korian    : "KO"
+    German    : "DE"
+    Hungarian : "HU"
+    Norwegian : "NO"
+    Polish    : "PL"
+    Swedish   : "SV"
+
 

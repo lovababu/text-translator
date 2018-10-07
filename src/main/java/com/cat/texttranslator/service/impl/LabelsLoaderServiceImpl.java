@@ -1,5 +1,6 @@
 package com.cat.texttranslator.service.impl;
 
+import com.cat.texttranslator.api.model.Error;
 import com.cat.texttranslator.api.model.TimeStamp;
 import com.cat.texttranslator.api.model.Translation;
 import com.cat.texttranslator.config.Languages;
@@ -8,7 +9,9 @@ import com.cat.texttranslator.constant.AppConstants;
 import com.cat.texttranslator.constant.ErrorCodes;
 import com.cat.texttranslator.entity.LabelDocument;
 import com.cat.texttranslator.exception.MalformedExcelFileException;
+import com.cat.texttranslator.exception.MalformedJsonPayloadException;
 import com.cat.texttranslator.service.LabelsLoaderService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -23,6 +26,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -131,29 +135,42 @@ public class LabelsLoaderServiceImpl implements LabelsLoaderService {
      * Takes json input and store labels in system.
      *
      * @param label
-     * @param translation
+     *      label in english.
+     * @param translations
+     *      list of translations for requested label.
      * @return 1 if successful, else 0.
      */
     @Override
-    public int post(String label, Translation translation) {
+    public int post(String label, List<Translation> translations) throws MalformedJsonPayloadException {
         LabelDocument labelDocument = LabelDocument.builder().label(label)
                 .timeStamp(
                         TimeStamp.builder()
                                 .created(LocalDateTime.now())
                                 .build()
-                ).translations(Collections.singletonMap(translation.getLanguage(),
-                        Translation.builder()
-                                .timeStamp(
-                                        TimeStamp.builder()
-                                                .created(LocalDateTime.now())
-                                                .build()
-                                )
-                                .value(translation.getValue())
-                                .code(translation.getCode())
-                                .build()
-                ))
+                ).translations(buildTranslation(translations))
                 .build();
         esConnector.index(label, labelDocument);
         return 1;
+    }
+
+    private Map<String, Translation> buildTranslation(List<Translation> translations) throws MalformedJsonPayloadException {
+        if (CollectionUtils.isNotEmpty(translations)) {
+            final Map<String, Translation> translationMap = new HashMap<>();
+            translations.forEach(translation -> {
+                Translation t = Translation.builder()
+                        .code(languages.getMap().get(translation.getLanguage()))
+                        .language(translation.getLanguage())
+                        .value(translation.getValue())
+                        .timeStamp(
+                                TimeStamp.builder()
+                                        .created(LocalDateTime.now())
+                                        .build()
+                        ).build();
+                translationMap.put(translation.getLanguage(), t);
+            });
+            return translationMap;
+        }
+        throw new MalformedJsonPayloadException(ErrorCodes.INVALID_JSON_PAYLOAD.getCode(),
+                ErrorCodes.INVALID_JSON_PAYLOAD.getMessage());
     }
 }

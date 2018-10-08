@@ -1,0 +1,21 @@
+{
+  "name": "auction-ui",
+  "version": "1.0.0",
+  "description": "Auction application web interface.",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run build",
+    "build": "webpack -d && webpack-dev-server --content-base app/ --inline --hot --history-api-fallback"
+  },
+  "author": "Durga, Padala",
+  "license": "ISC",
+  "dependencies": {
+    "angular": "^1.7.5",
+    "crypto": "0.0.3",
+    "jquery": "^3.3.1"
+  },
+  "devDependencies": {
+    "webpack": "^1.15.0",
+    "webpack-dev-server": "^1.16.5"
+  }
+}

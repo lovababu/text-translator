@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +86,8 @@ public class LabelsLoaderServiceImpl implements LabelsLoaderService {
         //assuming 0th index is english labels.
         LabelDocument labelDocument = LabelDocument.builder()
                 .label(row.getCell(0).getStringCellValue())
-                .translations(translations)
+                .translationMap(translations)
+                .translations(new ArrayList<>(translations.values()))
                 .timeStamp(
                         TimeStamp.builder()
                                 .created(LocalDateTime.now())
@@ -142,12 +144,14 @@ public class LabelsLoaderServiceImpl implements LabelsLoaderService {
      */
     @Override
     public int post(String label, List<Translation> translations) throws MalformedJsonPayloadException {
+        Map<String, Translation> translationMap = buildTranslation(translations);
         LabelDocument labelDocument = LabelDocument.builder().label(label)
                 .timeStamp(
                         TimeStamp.builder()
                                 .created(LocalDateTime.now())
                                 .build()
-                ).translations(buildTranslation(translations))
+                ).translationMap(translationMap)
+                .translations(new ArrayList<>(translationMap.values()))
                 .build();
         esConnector.index(label, labelDocument);
         return 1;
@@ -155,7 +159,7 @@ public class LabelsLoaderServiceImpl implements LabelsLoaderService {
 
     private Map<String, Translation> buildTranslation(List<Translation> translations) throws MalformedJsonPayloadException {
         if (CollectionUtils.isNotEmpty(translations)) {
-            final Map<String, Translation> translationMap = new HashMap<>();
+            final Map<String, Translation> translationMap = new TreeMap<>();
             translations.forEach(translation -> {
                 Translation t = Translation.builder()
                         .code(languages.getMap().get(translation.getLanguage()))

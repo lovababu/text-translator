@@ -7,6 +7,8 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +29,8 @@ public class ElasticSearchConnector {
     }
 
     private void updateDocument(String key, LabelDocument inMemDocument, LabelDocument labelDocument) {
-        Map<String, Translation> translationMap = inMemDocument.getTranslations();
-        translationMap.putAll(labelDocument.getTranslations());
+        Map<String, Translation> translationMap = inMemDocument.getTranslationMap();
+        translationMap.putAll(labelDocument.getTranslationMap());
         inMemoryDataStore.put(key, LabelDocument.builder()
                 .label(key)
                 .timeStamp(
@@ -37,24 +39,22 @@ public class ElasticSearchConnector {
                                 .modified(LocalDateTime.now())
                                 .build()
                 )
-                .translations(translationMap)
+                .translationMap(translationMap)
+                .translations(new ArrayList<>(translationMap.values()))
                 .build()
         );
     }
 
     public LabelDocument search(String key) {
-
         return MapUtils.isNotEmpty(inMemoryDataStore) ? inMemoryDataStore.get(key) : null;
     }
 
     public LabelDocument search(String key, String lang) {
         LabelDocument labelDocument = inMemoryDataStore.get(key);
         if (labelDocument != null) {
-            Translation translation = labelDocument.getTranslations().get(lang);
+            Translation translation = labelDocument.getTranslationMap().get(lang);
             return LabelDocument.builder()
-                    .translations(
-                            Collections.singletonMap(lang, translation)
-                    )
+                    .translations(Collections.singletonList(translation))
                     .timeStamp(labelDocument.getTimeStamp())
                     .label(key)
                     .build();

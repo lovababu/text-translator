@@ -1,7 +1,9 @@
 package com.cat.texttranslator.service.impl;
 
 import com.cat.texttranslator.connectors.ElasticSearchConnector;
+import com.cat.texttranslator.constant.ErrorCodes;
 import com.cat.texttranslator.entity.LabelDocument;
+import com.cat.texttranslator.exception.LabelNotFoundException;
 import com.cat.texttranslator.service.LabelSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,8 +22,13 @@ public class LabelSearchServiceImpl implements LabelSearchService {
      * @return available translations.
      */
     @Override
-    public LabelDocument search(String label) {
-        return esConnector.search(label);
+    public LabelDocument search(String label) throws LabelNotFoundException {
+        LabelDocument labelDocument = esConnector.search(label);
+        if (labelDocument != null) {
+            return labelDocument;
+        }
+        throw new LabelNotFoundException(ErrorCodes.LABEL_NOT_FOUND.getCode(),
+                ErrorCodes.LABEL_NOT_FOUND.getMessage());
     }
 
     /**
@@ -35,8 +42,13 @@ public class LabelSearchServiceImpl implements LabelSearchService {
      *    translation in requested language.
      */
     @Override
-    public LabelDocument find(String label, String language) {
-        return esConnector.search(label, language);
+    public LabelDocument find(String label, String language) throws LabelNotFoundException {
+        LabelDocument labelDocument = esConnector.search(label, language);
+        if (labelDocument != null) {
+            return labelDocument;
+        }
+        throw new LabelNotFoundException(ErrorCodes.LABEL_NOT_FOUND.getCode(),
+                ErrorCodes.LABEL_NOT_FOUND.getMessage());
     }
 
     /**

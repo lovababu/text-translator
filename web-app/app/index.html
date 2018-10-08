@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ReactJS Basics</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="css/thirdparty.css">
+</head>
+
+<body ng-app="app">
+    <div class="container">
+        <div class="row" id="header_Container">
+            <div class="panel panel-default">
+                <a href="#" style="text-decoration: none !important;">
+                    <div class="panel-heading">
+                        <h1>Multilingual Labels Management System.</h1>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="row" style="align:right" ng-controller="translationsController">
+            <div class="container">
+                <div class="row" id="loginSignUp_Container" style="display:block;">
+                    <div class="col-md-6 col-md-offset-3">
+                        <div class="panel panel-login">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <a href="#" class="active" id="load_label_tab">Load</a>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <a href="#" id="search_label_tab">Search</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div id="load_label">
+                                            <div class="col-lg-12">
+                                                <form role="form">
+                                                    <div class="form-group">
+                                                        <label for="myFile">ChooseFile (xlsx or xls):</label>
+                                                        <input class="form-control" type="file" file-model="myFile" id="myFile" />
+                                                    </div>
+                                                    <div>
+                                                        <button tabindex="4" class="form-control btn btn-login" ng-click="uploadFile()">
+                                                            Upload Labels
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                &nbsp;
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <form role="form">
+                                                    <div class="form-group">
+                                                        <label for="label">Label:</label>
+                                                        <input class="form-control" type="text" ng-model="label" id="label" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="jsonPayload">JsonPayload:</label>
+                                                        <textarea class="form-control" rows="5" id="jsonPayload" ng-model="jsonPayload" placeholder="{{samplePayload}}"></textarea>
+                                                    </div>
+                                                    <div>
+                                                        <button tabindex="4" class="form-control btn btn-login" ng-click="postLabels()">
+                                                            Post Labels
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div id="search_label" style="display:none;">
+                                            <div class="col-lg-12">
+                                                <form role="form">
+                                                    <div class="form-group">
+                                                        <label for="label">Lebel:</label>
+                                                        <input class="form-control" type="text" required ng-model="label" id="label" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="language">language:</label>
+                                                        <input class="form-control" type="text" ng-model="language" id="language" />
+                                                    </div>
+                                                    <div>
+                                                        <button tabindex="4" class="form-control btn btn-login" ng-click="search()">
+                                                            Search Labels
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="col-lg-12">
+                                                <div class="row">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Language</th>
+                                                                <th>Code</th>
+                                                                <th>Translation</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody> 
+                                                            <tr ng-repeat="translation in translations">
+                                                                <td>{{ translation.language }}</td>
+                                                                <td>{{ translation.code }}</td>
+                                                                <td>{{ translation.value }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/app/bundle.js"></script>
+</body>
+
+</html>
